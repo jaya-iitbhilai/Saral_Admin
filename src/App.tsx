@@ -1,26 +1,55 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// import React from "react";
+// import Navbar from "./components/Navbar";
+// import DepartmentForm from "./components/DepartmentForm";
+// import Footer from "./components/Footer";
+// import SchemeForm from "./components/SchemeForm";
+// import CareerForm from "./components/CareerForm";
 
-function App() {
+// const App: React.FC = () => {
+//   return (
+//     <div>
+//       <Navbar />
+//       <DepartmentForm />
+//       <SchemeForm />
+//       <CareerForm />
+//       <Footer />
+//     </div>
+//   );
+// };
+
+// export default App;
+
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import DepartmentForm from "./components/DepartmentForm";
+import SchemeForm from "./components/SchemeForm";
+import CareerForm from "./components/CareerForm";
+import Footer from "./components/Footer";
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navbar />
+
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <h1 className=" flex items-center justify-center text-2xl mt-4 h-[80vh]">
+              Welcome to the{" "}
+              <span className="text-blue-800 ml-2 font-bold">OAOC</span>
+            </h1>
+          }
+        />
+        <Route path="/departments" element={<DepartmentForm />} />
+        <Route path="/schemes" element={<SchemeForm />} />
+        <Route path="/careers" element={<CareerForm />} />
+      </Routes>
+
+      <Footer />
     </div>
   );
-}
+};
 
 export default App;
