@@ -17,7 +17,10 @@ import {
 } from "lucide-react";
 
 interface ExamStructure {
-  subject: string;
+  subject: {
+    hi: string;
+    en: string;
+  };
   questions: number;
   marks: number;
   duration: string;
@@ -33,16 +36,40 @@ interface CareerFormData {
     en: string;
   };
   id: string;
-  title: string;
+  title: {
+    hi: string;
+    en: string;
+  };
   websiteLink: string;
-  description: string;
-  eligibility: string;
-  applicationProcess: string;
-  examPattern: string;
+  description: {
+    hi: string;
+    en: string;
+  };
+  eligibility: {
+    hi: string;
+    en: string;
+  };
+  applicationProcess: {
+    hi: string;
+    en: string;
+  };
+  examPattern: {
+    hi: string;
+    en: string;
+  };
   examStructure: ExamStructure[];
-  specialNotes: string;
-  reservation: string;
-  contact: string;
+  specialNotes: {
+    hi: string;
+    en: string;
+  };
+  reservation: {
+    hi: string;
+    en: string;
+  };
+  contact: {
+    hi: string;
+    en: string;
+  };
   uploadFile: string;
 }
 
@@ -57,17 +84,48 @@ const CareerForm: React.FC = () => {
       en: "",
     },
     id: "",
-    title: "",
+    title: {
+      hi: "",
+      en: "",
+    },
     websiteLink: "",
-    description: "",
-    eligibility: "",
-    applicationProcess: "",
-    examPattern: "",
-    examStructure: [],
-    specialNotes: "",
-    reservation: "",
-    contact: "",
-    uploadFile: "",
+    description: {
+      hi: "",
+      en: "",
+    },
+    eligibility: {
+      hi: "",
+      en: "",
+    },
+    applicationProcess: {
+      hi: "",
+      en: "",
+    },
+    examPattern: {
+      hi: "",
+      en: "",
+    },
+    examStructure: [
+      {
+        subject: { en: "", hi: "" },
+        questions: 0,
+        marks: 0,
+        duration: "",
+      },
+    ],
+    specialNotes: {
+      hi: "",
+      en: "",
+    },
+    reservation: {
+      hi: "",
+      en: "",
+    },
+    contact: {
+      hi: "",
+      en: "",
+    },
+    uploadFile: null,
   });
 
   const statusOptions = ["Education", "Job", "Business"];
@@ -110,6 +168,10 @@ const CareerForm: React.FC = () => {
     "Franchise",
     "Cooperative",
     "Partnership",
+    "Research",
+    "Academics",
+    "Education",
+    "Science",
   ];
 
   const examTypeOptionsHi = [
@@ -172,7 +234,10 @@ const CareerForm: React.FC = () => {
       examStructure: [
         ...prev.examStructure,
         {
-          subject: "",
+          subject: {
+            en: "",
+            hi: "",
+          },
           questions: 0,
           marks: 0,
           duration: "",
@@ -191,20 +256,143 @@ const CareerForm: React.FC = () => {
   const handleExamStructureChange = (
     index: number,
     field: keyof ExamStructure,
-    value: string | number
+    // value: string | number
+    value: any,
+    lang?: "hi" | "en"
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      examStructure: prev.examStructure.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item
-      ),
-    }));
+    setFormData((prev) => {
+      const updated = [...prev.examStructure];
+      if (field === "subject" && lang) {
+        updated[index].subject[lang] = value;
+      } else {
+        updated[index][field] = value;
+      }
+      return { ...prev, examStructure: updated };
+    });
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    // Handle form submission here
-    alert("Form submitted successfully! Check console for data.");
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "uploadFile") {
+      setFormData((prev) => ({ ...prev, uploadFile: files[0] }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const data = new FormData();
+
+  //   data.append("uploadFile", formData.uploadFile);
+  //   try {
+  //     const response = await fetch("http://localhost:8000/api/careers", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+  //     console.log("response", response);
+
+  //     if (response.ok) {
+  //       const result = await response.json();
+  //       console.log("Form submitted successfully:", result);
+  //       alert("Career information saved successfully!");
+  //     } else {
+  //       const error = await response.json();
+  //       console.error("Error submitting form:", error);
+  //       alert("Failed to submit form. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Network or server error:", error);
+  //   }
+  // };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log("formdta----", formData);
+
+    const data = new FormData();
+
+    // Append all simple string fields (match your schema keys)
+    data.append("currentStatus", formData.currentStatus);
+    data.append("currentEducation", formData.currentEducation);
+    data.append("stream", formData.stream);
+
+    // Append array values
+    formData.interests.forEach((interest) =>
+      data.append("interests[]", interest)
+    );
+
+    // Append examType fields (nested)
+    data.append("examType[hi]", formData.examType.hi);
+    data.append("examType[en]", formData.examType.en);
+
+    // Append title, description, etc.
+    data.append("title[hi]", formData.title.hi);
+    data.append("title[en]", formData.title.en);
+
+    data.append("websiteLink", formData.websiteLink);
+    data.append("id", formData.id);
+
+    data.append("description[hi]", formData.description.hi);
+    data.append("description[en]", formData.description.en);
+
+    data.append("eligibility[hi]", formData.eligibility.hi);
+    data.append("eligibility[en]", formData.eligibility.en);
+
+    data.append("applicationProcess[hi]", formData.applicationProcess.hi);
+    data.append("applicationProcess[en]", formData.applicationProcess.en);
+
+    data.append("examPattern[hi]", formData.examPattern.hi);
+    data.append("examPattern[en]", formData.examPattern.en);
+
+    data.append("specialNotes[hi]", formData.specialNotes.hi);
+    data.append("specialNotes[en]", formData.specialNotes.en);
+
+    data.append("reservation[hi]", formData.reservation.hi);
+    data.append("reservation[en]", formData.reservation.en);
+
+    data.append("contact[hi]", formData.contact.hi);
+    data.append("contact[en]", formData.contact.en);
+
+    // Append examStructure (array of objects)
+    formData.examStructure.forEach((item, index) => {
+      data.append(`examStructure[${index}][subject][hi]`, item.subject.hi);
+      data.append(`examStructure[${index}][subject][en]`, item.subject.en);
+      data.append(`examStructure[${index}][questions]`, item.questions);
+      data.append(`examStructure[${index}][marks]`, item.marks);
+      data.append(`examStructure[${index}][duration]`, item.duration);
+    });
+
+    // Append file
+    data.append("uploadFile", formData.uploadFile); // This must be a File object
+
+    [...data.entries()].forEach(([key, value]) => {
+      console.log(`${key}:`, value);
+    });
+
+    try {
+      const response = await fetch("http://localhost:8000/api/careers", {
+        method: "POST",
+        body: data,
+        // Don't set Content-Type manually
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Form submitted successfully:", result);
+        alert("Career information saved successfully!");
+      } else {
+        const error = await response.json();
+        console.error("Error submitting form:", error);
+        alert("Failed to submit form. Please try again.");
+      }
+    } catch (error) {
+      console.error("Network or server error:", error);
+    }
   };
 
   return (
@@ -384,19 +572,46 @@ const CareerForm: React.FC = () => {
               </h2>
 
               <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => handleInputChange("title", e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
+                {/* title */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title (Hindi) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.title.hi}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          title: { ...prev.title, hi: e.target.value },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title (English) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.title.en}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          title: { ...prev.title, en: e.target.value },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
                 </div>
 
+                {/* websiteLink */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Globe className="inline h-4 w-4 mr-1" />
@@ -412,63 +627,184 @@ const CareerForm: React.FC = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      handleInputChange("description", e.target.value)
-                    }
-                    rows={4}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* description */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Eligibility
+                      Description (Hindi) *
                     </label>
-                    <textarea
-                      value={formData.eligibility}
+                    <input
+                      type="text"
+                      value={formData.description.hi}
                       onChange={(e) =>
-                        handleInputChange("eligibility", e.target.value)
+                        setFormData((prev) => ({
+                          ...prev,
+                          description: {
+                            ...prev.description,
+                            hi: e.target.value,
+                          },
+                        }))
                       }
-                      rows={3}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Application Process
+                      Description (English) *
                     </label>
-                    <textarea
-                      value={formData.applicationProcess}
+                    <input
+                      type="text"
+                      value={formData.description.en}
                       onChange={(e) =>
-                        handleInputChange("applicationProcess", e.target.value)
+                        setFormData((prev) => ({
+                          ...prev,
+                          description: {
+                            ...prev.description,
+                            en: e.target.value,
+                          },
+                        }))
                       }
-                      rows={3}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Exam Pattern
-                  </label>
-                  <textarea
-                    value={formData.examPattern}
-                    onChange={(e) =>
-                      handleInputChange("examPattern", e.target.value)
-                    }
-                    rows={3}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                {/* eligibility */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Eligibility (Hindi) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.eligibility.hi}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          eligibility: {
+                            ...prev.eligibility,
+                            hi: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Eligibility (English) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.eligibility.en}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          eligibility: {
+                            ...prev.eligibility,
+                            en: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* application process */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Application Process (Hindi) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.applicationProcess.hi}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          applicationProcess: {
+                            ...prev.applicationProcess,
+                            hi: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Application Process (English) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.applicationProcess.en}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          applicationProcess: {
+                            ...prev.applicationProcess,
+                            en: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* exam pattern */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Exam Pattern (Hindi) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.examPattern.hi}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          examPattern: {
+                            ...prev.examPattern,
+                            hi: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Exam Pattern (English) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.examPattern.en}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          examPattern: {
+                            ...prev.examPattern,
+                            en: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -509,25 +845,50 @@ const CareerForm: React.FC = () => {
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* subject  hi*/}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Subject
+                          Subject (Hindi) *
                         </label>
                         <input
                           type="text"
-                          value={structure.subject}
+                          value={structure.subject.hi}
                           onChange={(e) =>
                             handleExamStructureChange(
                               index,
                               "subject",
-                              e.target.value
+                              e.target.value,
+                              "hi"
                             )
                           }
                           className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
                         />
                       </div>
 
+                      {/* subject  en*/}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Subject (English) *
+                        </label>
+                        <input
+                          type="text"
+                          value={structure.subject.en}
+                          onChange={(e) =>
+                            handleExamStructureChange(
+                              index,
+                              "subject",
+                              e.target.value,
+                              "en"
+                            )
+                          }
+                          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+
+                      {/* questions */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Questions
@@ -546,6 +907,7 @@ const CareerForm: React.FC = () => {
                         />
                       </div>
 
+                      {/* marks */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Marks
@@ -564,6 +926,7 @@ const CareerForm: React.FC = () => {
                         />
                       </div>
 
+                      {/* duration */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           <Calendar className="inline h-4 w-4 mr-1" />
@@ -595,60 +958,163 @@ const CareerForm: React.FC = () => {
                 Additional Information
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Special Notes
-                  </label>
-                  <textarea
-                    value={formData.specialNotes}
-                    onChange={(e) =>
-                      handleInputChange("specialNotes", e.target.value)
-                    }
-                    rows={3}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+              <div className="space-y-6">
+                {/* Special Notes */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Special Notes (Hindi) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.specialNotes.hi}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          specialNotes: {
+                            ...prev.specialNotes,
+                            hi: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Special Notes (English) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.specialNotes.en}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          specialNotes: {
+                            ...prev.specialNotes,
+                            en: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Reservation
-                  </label>
-                  <textarea
-                    value={formData.reservation}
-                    onChange={(e) =>
-                      handleInputChange("reservation", e.target.value)
-                    }
-                    rows={3}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                {/* Reservation */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Reservation (Hindi) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.reservation.hi}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          reservation: {
+                            ...prev.reservation,
+                            hi: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Reservation (English) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.reservation.en}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          reservation: {
+                            ...prev.reservation,
+                            en: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Phone className="inline h-4 w-4 mr-1" />
-                    Contact
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.contact}
-                    onChange={(e) =>
-                      handleInputChange("contact", e.target.value)
-                    }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                {/* Contact */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Phone className="inline h-4 w-4 mr-1" />
+                      Contact (Hindi) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.contact.hi}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          contact: {
+                            ...prev.contact,
+                            hi: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Phone className="inline h-4 w-4 mr-1" />
+                      Contact (English) *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.contact.en}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          contact: {
+                            ...prev.contact,
+                            en: e.target.value,
+                          },
+                        }))
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
                 </div>
 
+                {/* upload file */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Upload className="inline h-4 w-4 mr-1" />
                     Upload File
                   </label>
                   <input
-                    type="text"
-                    value={formData.uploadFile}
+                    type="file"
+                    name="uploadFile"
+                    accept=".pdf,.png,.jpg"
+                    // onChange={(e) =>
+                    //   setFormData({
+                    //     ...formData,
+                    //     uploadFile: e.target.files[0],
+                    //   })
+                    // }
+                    // value={formData.uploadFile}
                     onChange={(e) =>
-                      handleInputChange("uploadFile", e.target.value)
+                      handleInputChange("uploadFile", e.target.files[0])
                     }
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="File path or URL"
