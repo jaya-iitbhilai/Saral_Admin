@@ -14,7 +14,6 @@ import {
   Plus,
   Trash2,
   Save,
-  UserPen,
 } from "lucide-react";
 
 interface ExamStructure {
@@ -29,7 +28,7 @@ interface ExamStructure {
 
 interface CareerFormData {
   currentStatus: string;
-  currentEducation: string[];
+  currentEducation: string;
   stream: string;
   interests: string[];
   examType: {
@@ -77,7 +76,7 @@ interface CareerFormData {
 const CareerForm: React.FC = () => {
   const [formData, setFormData] = useState<CareerFormData>({
     currentStatus: "",
-    currentEducation: [],
+    currentEducation: "",
     stream: "not-applicable",
     interests: [],
     examType: {
@@ -218,14 +217,6 @@ const CareerForm: React.FC = () => {
         : [...prev.interests, interest],
     }));
   };
-  const handleCurrentEducationToggle = (education: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      currentEducation: prev.currentEducation.includes(education)
-        ? prev.currentEducation.filter((i) => i !== education)
-        : [...prev.currentEducation, education],
-    }));
-  };
 
   const handleExamTypeChange = (lang: "hi" | "en", value: string) => {
     setFormData((prev) => ({
@@ -280,6 +271,44 @@ const CareerForm: React.FC = () => {
     });
   };
 
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "uploadFile") {
+      setFormData((prev) => ({ ...prev, uploadFile: files[0] }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const data = new FormData();
+
+  //   data.append("uploadFile", formData.uploadFile);
+  //   try {
+  //     const response = await fetch("http://localhost:8000/api/careers", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+  //     console.log("response", response);
+
+  //     if (response.ok) {
+  //       const result = await response.json();
+  //       console.log("Form submitted successfully:", result);
+  //       alert("Career information saved successfully!");
+  //     } else {
+  //       const error = await response.json();
+  //       console.error("Error submitting form:", error);
+  //       alert("Failed to submit form. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Network or server error:", error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -289,10 +318,7 @@ const CareerForm: React.FC = () => {
 
     // Append all simple string fields (match your schema keys)
     data.append("currentStatus", formData.currentStatus);
-
-    formData.currentEducation.forEach((currentEducations) =>
-      data.append("currentEducation[]", currentEducations)
-    );
+    data.append("currentEducation", formData.currentEducation);
     data.append("stream", formData.stream);
 
     // Append array values
@@ -388,22 +414,7 @@ const CareerForm: React.FC = () => {
                 Basic Information
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                {/* id */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    ID *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.id}
-                    onChange={(e) => handleInputChange("id", e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                {/* current status */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Current Status *
@@ -425,32 +436,27 @@ const CareerForm: React.FC = () => {
                   </select>
                 </div>
 
-                {/* current equcation */}
-                <div className="border-b border-gray-200 pb-6">
-                  <h2 className="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                    <UserPen className="h-5 w-5" />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Current Education *
-                  </h2>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {educationOptions.map((item) => (
-                      <label
-                        key={item}
-                        className="flex items-center space-x-2 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={formData.currentEducation.includes(item)}
-                          onChange={() => handleCurrentEducationToggle(item)}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700">{item}</span>
-                      </label>
+                  </label>
+                  <select
+                    value={formData.currentEducation}
+                    onChange={(e) =>
+                      handleInputChange("currentEducation", e.target.value)
+                    }
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Select Education</option>
+                    {educationOptions.map((edu) => (
+                      <option key={edu} value={edu}>
+                        {edu}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
-                {/* stream */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Stream
@@ -468,6 +474,19 @@ const CareerForm: React.FC = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    ID *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.id}
+                    onChange={(e) => handleInputChange("id", e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
                 </div>
               </div>
             </div>
