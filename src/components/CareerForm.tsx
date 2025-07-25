@@ -1106,13 +1106,6 @@ const CareerForm: React.FC = () => {
                     type="file"
                     name="uploadFile"
                     accept=".pdf,.png,.jpg"
-                    // onChange={(e) =>
-                    //   setFormData({
-                    //     ...formData,
-                    //     uploadFile: e.target.files[0],
-                    //   })
-                    // }
-                    // value={formData.uploadFile}
                     onChange={(e) =>
                       handleInputChange("uploadFile", e.target.files[0])
                     }
