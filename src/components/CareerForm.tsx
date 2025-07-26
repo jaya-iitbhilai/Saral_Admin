@@ -147,12 +147,27 @@ const CareerForm: React.FC = () => {
     "diploma",
   ];
 
-  const streamOptions = ["science", "commerce", "arts", "not-applicable"];
+  const streamOptions = [
+    "science",
+    "m.tech",
+    "arts",
+    "education",
+    "government jobs",
+    "not-applicable",
+  ];
 
   const interestOptions = [
     "Technology",
     "Teaching",
+    "Research",
+    "Academics",
+    "Education",
+    "Primary School",
+    "Government Jobs",
     "Administration",
+    "Lecturer",
+    "Assistant Professor",
+    "Higher Education",
     "Defense",
     "Banking",
     "Railways",
@@ -169,16 +184,13 @@ const CareerForm: React.FC = () => {
     "Franchise",
     "Cooperative",
     "Partnership",
-    "Research",
-    "Academics",
-    "Education",
     "Science",
   ];
 
   const examTypeOptionsHi = [
     "भाग-1 प्रवेश एवं छात्रवृत्ति हेतु प्रवेश परीक्षा",
     "भाग-02 पात्रता परीक्षा",
-    "भाग-03 छत्तीसगढ़ लोक सेवा आयोग द्वारा आयोजित परीक्षायें",
+    "भाग-03 छत्तीसगढ़ लोक सेवा आयोग द्वारा आयोजित परीक्षायें",
     "भाग-04 संघ लोक सेवा आयोग द्वारा आयोजित परीक्षायें",
     "भाग-05 भारतीय सैन्य बलों में भर्ती हेतु प्रतियोगी परीक्षायें",
     "भाग-06 बैंकों में अधिकारी एवं क्लर्क भर्ती की परीक्षायें",
