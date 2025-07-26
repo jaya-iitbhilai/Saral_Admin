@@ -145,9 +145,13 @@ const CareerForm: React.FC = () => {
     "working",
     "phd",
     "diploma",
+    "bachelor-first-year",
+    "bachelor-second-year",
+    "bachelor-third-year",
+    "masters",
   ];
 
-  const streamOptions = ["science", "commerce", "arts", "not-applicable"];
+  const streamOptions = ["science", "commerce", "arts","Vocational", "not-applicable"];
 
   const interestOptions = [
     "Technology",
@@ -173,6 +177,10 @@ const CareerForm: React.FC = () => {
     "Academics",
     "Education",
     "Science",
+    "Innovation",
+    "Higher-Education",
+    "Fundamental-Sciences",
+    "ITI","Technical Training","Skill Development"
   ];
 
   const examTypeOptionsHi = [
