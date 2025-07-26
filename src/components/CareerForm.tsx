@@ -180,7 +180,7 @@ const CareerForm: React.FC = () => {
     "Innovation",
     "Higher-Education",
     "Fundamental-Sciences",
-    "ITI","Technical Training","Skill Development"
+    "ITI","Technical Training","Skill Development","Architecture","Design","Hospitality","Service", "Management"
   ];
 
   const examTypeOptionsHi = [
