@@ -160,6 +160,7 @@ const CareerForm: React.FC = () => {
     "government jobs",
     "vocational",
     "commerce",
+    "any",
     "not-applicable",
   ];
 
