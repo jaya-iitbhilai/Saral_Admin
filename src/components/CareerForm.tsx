@@ -148,6 +148,7 @@ const CareerForm: React.FC = () => {
     "bachelor-first-year",
     "bachelor-second-year",
     "bachelor-third-year",
+    "final-year",
     "masters",
     "iti"
   ];
@@ -196,6 +197,7 @@ const CareerForm: React.FC = () => {
     "Higher Education",
     "Fundamental Sciences",
     "ITI",
+    "SSC",
     "Technical Training",
     "Skill Development",
     "Government Jobs",
@@ -204,7 +206,9 @@ const CareerForm: React.FC = () => {
     "Police Services",
     "Army",
     "Navy",
-    "Air Force"
+    "Air Force",
+    "Clerical Work",
+    "Probationary Officer"
   ];
 
   const examTypeOptionsHi = [
