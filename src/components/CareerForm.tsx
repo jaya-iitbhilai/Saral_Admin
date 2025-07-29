@@ -76,7 +76,7 @@ interface CareerFormData {
 
 const CareerForm: React.FC = () => {
   const [formData, setFormData] = useState<CareerFormData>({
-    currentStatus: "",
+    currentStatus: "Education",
     currentEducation: [],
     stream: "not-applicable",
     interests: [],
@@ -129,7 +129,8 @@ const CareerForm: React.FC = () => {
     uploadFile: null,
   });
 
-  const statusOptions = ["Education", "Job", "Business"];
+  const statusOptions = ["Education"];
+  // const statusOptions = ["Education", "Job", "Business"];
 
   const educationOptions = [
     "class-5",
@@ -150,7 +151,7 @@ const CareerForm: React.FC = () => {
     "bachelor-third-year",
     "final-year",
     "masters",
-    "iti"
+    "iti",
   ];
 
   const streamOptions = [
@@ -178,20 +179,10 @@ const CareerForm: React.FC = () => {
     "Higher Education",
     "Defense",
     "Banking",
-    "Railways",
     "Healthcare",
     "Engineering",
     "Law",
     "Agriculture",
-    "Full-time",
-    "Part-time",
-    "Contract",
-    "Freelance",
-    "Internship",
-    "Apprenticeship",
-    "Franchise",
-    "Cooperative",
-    "Partnership",
     "Science",
     "Innovation",
     "Higher Education",
@@ -202,13 +193,12 @@ const CareerForm: React.FC = () => {
     "Skill Development",
     "Government Jobs",
     "Management",
-    "Environment",
     "Police Services",
     "Army",
     "Navy",
     "Air Force",
     "Clerical Work",
-    "Probationary Officer"
+    "Probationary Officer",
   ];
 
   const examTypeOptionsHi = [
@@ -444,7 +434,15 @@ const CareerForm: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Current Status *
                   </label>
-                  <select
+                  {statusOptions.map((status) => (
+                    <input
+                      type="text"
+                      key={status}
+                      value={status}
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  ))}
+                  {/* <select
                     value={formData.currentStatus}
                     onChange={(e) =>
                       handleInputChange("currentStatus", e.target.value)
@@ -458,7 +456,7 @@ const CareerForm: React.FC = () => {
                         {status}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
                 </div>
 
                 {/* current equcation */}
