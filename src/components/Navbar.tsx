@@ -23,6 +23,11 @@ const Navbar: React.FC = () => {
             Careers
           </Link>
         </li>
+        <li>
+          <Link to="/saksham" className="hover:underline">
+            Saksham
+          </Link>
+        </li>
       </ul>
     </nav>
   );
