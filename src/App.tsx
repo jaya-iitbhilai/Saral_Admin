@@ -25,6 +25,7 @@ import Navbar from "./components/Navbar";
 import DepartmentForm from "./components/DepartmentForm";
 import SchemeForm from "./components/SchemeForm";
 import CareerForm from "./components/CareerForm";
+import SakshamForm from "./components/SakshamForm";
 import Footer from "./components/Footer";
 
 const App: React.FC = () => {
@@ -45,6 +46,7 @@ const App: React.FC = () => {
         <Route path="/departments" element={<DepartmentForm />} />
         <Route path="/schemes" element={<SchemeForm />} />
         <Route path="/careers" element={<CareerForm />} />
+        <Route path="/saksham" element={<SakshamForm />} />
       </Routes>
 
       <Footer />
