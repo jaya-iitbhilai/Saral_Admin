@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Plus,
   Minus,
@@ -167,36 +168,70 @@ const SchemeForm: React.FC = () => {
   //   // Handle form submission here
   // };
 
+  // 2
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const departmentId = formData.departmentId || "health"; // or pass dynamically
+  //     const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+  //     const response = await fetch(
+  //       `BASE_URL/api/schemes/create-scheme/${departmentId}`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(formData),
+  //       }
+  //     );
+
+  //     const data = await response.json();
+  //     console.log("data", data);
+
+  //     if (response.ok) {
+  //       alert("Scheme created successfully!");
+  //       console.log(data);
+  //       // Optional: Reset form
+  //     } else {
+  //       console.error("Error creating scheme:", data.message);
+  //       alert("Failed to create scheme");
+  //     }
+  //   } catch (error) {
+  //     console.error("Network error:", error);
+  //     alert("Something went wrong");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const departmentId = formData.departmentId || "health"; // or pass dynamically
-      const response = await fetch(
-        `http://localhost:8000/api/schemes/create-scheme/${departmentId}`,
+      const departmentId = formData.departmentId || "health"; // Or pass dynamically
+      const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+      const response = await axios.post(
+        `${BASE_URL}/api/schemes/create-scheme/${departmentId}`,
+        formData,
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
         }
       );
 
-      const data = await response.json();
-      console.log("data", data);
+      console.log("data", response.data);
 
-      if (response.ok) {
-        alert("Scheme created successfully!");
-        console.log(data);
-        // Optional: Reset form
-      } else {
-        console.error("Error creating scheme:", data.message);
-        alert("Failed to create scheme");
-      }
+      alert("Scheme created successfully!");
+      // Optionally reset form
+      // setFormData(initialState);
     } catch (error) {
-      console.error("Network error:", error);
-      alert("Something went wrong");
+      console.error(
+        "Error creating scheme:",
+        error.response?.data || error.message
+      );
+      alert("Failed to create scheme");
     }
   };
 

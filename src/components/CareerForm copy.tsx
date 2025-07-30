@@ -375,7 +375,7 @@ const CareerForm: React.FC = () => {
     });
 
     try {
-      const response = await fetch("http://localhost:8000/api/careers", {
+      const response = await fetch("BASE_URL/api/careers", {
         method: "POST",
         body: data,
         // Don't set Content-Type manually

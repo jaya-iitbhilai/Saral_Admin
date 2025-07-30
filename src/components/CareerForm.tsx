@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   User,
   GraduationCap,
@@ -75,6 +76,7 @@ interface CareerFormData {
 }
 
 const CareerForm: React.FC = () => {
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [formData, setFormData] = useState<CareerFormData>({
     currentStatus: "Education",
     currentEducation: [],
@@ -375,24 +377,45 @@ const CareerForm: React.FC = () => {
     });
 
     try {
-      const response = await fetch("http://localhost:8000/api/careers", {
-        method: "POST",
-        body: data,
-        // Don't set Content-Type manually
+      const response = await axios.post(`${BASE_URL}/api/careers`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Form submitted successfully:", result);
-        alert("Career information saved successfully!");
-      } else {
-        const error = await response.json();
-        console.error("Error submitting form:", error);
-        alert("Failed to submit form. Please try again.");
-      }
+      console.log("Form submitted successfully:", response.data);
+      alert("Career information saved successfully!");
     } catch (error) {
-      console.error("Network or server error:", error);
+      console.error(
+        "Error submitting form:",
+        error.response?.data || error.message
+      );
+      alert("Failed to submit form. Please try again.");
     }
+
+    // try {
+    //   const response = axios
+    //     .get(`${BASE_URL}/api/careers`)
+    //     .then((res) => console.log(res.data))
+    //     .catch((err) => console.error(err));
+    //   // const response = axios.get(`${BASE_URL}/api/careers`, {
+    //   //   // const response = await fetch(`${BASE_URL}/api/careers`, {
+    //   //   method: "POST",
+    //   //   body: data,
+    //   // });
+
+    //   if (response.ok) {
+    //     const result = await response.json();
+    //     console.log("Form submitted successfully:", result);
+    //     alert("Career information saved successfully!");
+    //   } else {
+    //     const error = await response.json();
+    //     console.error("Error submitting form:", error);
+    //     alert("Failed to submit form. Please try again.");
+    //   }
+    // } catch (error) {
+    //   console.error("Network or server error:", error);
+    // }
   };
 
   return (

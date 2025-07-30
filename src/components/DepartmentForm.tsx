@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Plus,
   Trash2,
@@ -14,20 +15,6 @@ import {
   Hospital,
   Briefcase,
 } from "lucide-react";
-
-const emojiOptions = [
-  { label: "Health", value: "🏥" },
-  { label: "Education", value: "🏫" },
-  { label: "Government", value: "🏛️" },
-  { label: "Documents", value: "📄" },
-  { label: "Support", value: "📞" },
-  { label: "Transport", value: "🚌" },
-  { label: "Rural", value: "🏘️" },
-  { label: "Women", value: "👩‍👧‍👦" },
-  { label: "Industry", value: "🏭" },
-  { label: "Bank", value: "🏦" },
-  { label: "Labour", value: "👷" },
-];
 
 interface ContactData {
   phone: string;
@@ -61,7 +48,7 @@ interface DepartmentData {
     en: string;
     hi: string;
   };
-  website: string[];
+  website: string;
   contact: ContactData;
   office: {
     address: AddressData;
@@ -71,12 +58,13 @@ interface DepartmentData {
 }
 
 const DepartmentForm: React.FC = () => {
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [formData, setFormData] = useState<DepartmentData>({
     id: "",
     name: { en: "", hi: "" },
-    icon: "",
+    icon: null,
     description: { en: "", hi: "" },
-    website: [""],
+    website: "",
     contact: {
       phone: "",
       email: "",
@@ -176,59 +164,308 @@ const DepartmentForm: React.FC = () => {
     }));
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const response = await fetch(
+  //       "http://localhost:8000/api/departments/create-department",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(formData),
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       const result = await response.json();
+  //       alert("Department created successfully!");
+  //       console.log("Response:", result);
+
+  //       // Reset form
+  //       setFormData({
+  //         id: "",
+  //         name: { en: "", hi: "" },
+  //         icon: "",
+  //         description: { en: "", hi: "" },
+  //         website: [""],
+  //         contact: {
+  //           phone: "",
+  //           email: "",
+  //           helpline: "",
+  //         },
+  //         office: {
+  //           address: { en: "", hi: "" },
+  //           pincode: "",
+  //         },
+  //         personsOfContact: [
+  //           {
+  //             name: "",
+  //             designation: { en: "", hi: "" },
+  //             phone: "",
+  //             email: "",
+  //           },
+  //         ],
+  //       });
+  //     } else {
+  //       const error = await response.json();
+  //       console.error("Error:", error);
+  //       alert("Failed to create department.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Network error:", error);
+  //     alert("Network error. Please try again later.");
+  //   }
+  // };
+
+  // 2
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const formDataToSend = new FormData();
+
+  //     // Append image (icon file)
+  //     if (formData.icon) {
+  //       formDataToSend.append("icon", formData.icon);
+  //     } else {
+  //       alert("Please upload an icon image.");
+  //       return;
+  //     }
+
+  //     // Append the rest of the fields
+  //     const otherData = { ...formData };
+  //     delete otherData.icon; // Avoid sending file twice
+
+  //     formDataToSend.append("id", otherData.id);
+  //     formDataToSend.append("name", JSON.stringify(otherData.name));
+  //     formDataToSend.append(
+  //       "description",
+  //       JSON.stringify(otherData.description)
+  //     );
+  //     formDataToSend.append("website", JSON.stringify(otherData.website));
+  //     formDataToSend.append("contact", JSON.stringify(otherData.contact));
+  //     formDataToSend.append("office", JSON.stringify(otherData.office));
+  //     formDataToSend.append(
+  //       "personsOfContact",
+  //       JSON.stringify(otherData.personsOfContact)
+  //     );
+
+  //     // const response = await fetch(
+  //     //   "BASE_URL/api/departments/create-department",
+  //     //   {
+  //     //     method: "POST",
+  //     //     body: formDataToSend,
+  //     //   }
+  //     // );
+  //     const response = await axios.post(
+  //       `${BASE_URL}/api/departments/create-department`,
+  //       formDataToSend,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+
+  //     alert("Department created successfully!");
+  //     console.log("Response:", response.data);
+
+  //     if (response.ok) {
+  //       const result = await response.json();
+  //       alert("Department created successfully!");
+  //       console.log("Response:", result);
+
+  //       // Reset form
+  //       setFormData({
+  //         id: "",
+  //         name: { en: "", hi: "" },
+  //         icon: null,
+  //         description: { en: "", hi: "" },
+  //         website: "",
+  //         contact: {
+  //           phone: "",
+  //           email: "",
+  //           helpline: "",
+  //         },
+  //         office: {
+  //           address: { en: "", hi: "" },
+  //           pincode: "",
+  //         },
+  //         personsOfContact: [
+  //           {
+  //             name: "",
+  //             designation: { en: "", hi: "" },
+  //             phone: "",
+  //             email: "",
+  //           },
+  //         ],
+  //       });
+  //     } else {
+  //       const error = await response.json();
+  //       console.error("Error:", error);
+  //       alert("Failed to create department.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Network error:", error);
+  //     alert("Network error. Please try again later.");
+  //   }
+  // };
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const formDataToSend = new FormData();
+  //     console.log("icon:", formData.icon);
+  //     // Append image (icon file)
+  //     if (formData.icon) {
+  //       formDataToSend.append("icon", formData.icon);
+  //     } else {
+  //       alert("Please upload an icon image.");
+  //       return;
+  //     }
+
+  //     // Append the rest of the fields
+  //     const otherData = { ...formData };
+  //     delete otherData.icon; // Avoid sending file twice
+
+  //     formDataToSend.append("id", otherData.id);
+  //     formDataToSend.append("name", JSON.stringify(otherData.name));
+  //     formDataToSend.append(
+  //       "description",
+  //       JSON.stringify(otherData.description)
+  //     );
+  //     formDataToSend.append("website", JSON.stringify(otherData.website));
+  //     formDataToSend.append("contact", JSON.stringify(otherData.contact));
+  //     formDataToSend.append("office", JSON.stringify(otherData.office));
+  //     formDataToSend.append(
+  //       "personsOfContact",
+  //       JSON.stringify(otherData.personsOfContact)
+  //     );
+
+  //     const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+  //     const response = await axios.post(
+  //       `${BASE_URL}/api/departments/create-department`,
+  //       formDataToSend,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+
+  //     alert("Department created successfully!");
+  //     console.log("Response:", response.data);
+
+  //     // Reset form
+  //     setFormData({
+  //       id: "",
+  //       name: { en: "", hi: "" },
+  //       icon: null,
+  //       description: { en: "", hi: "" },
+  //       website: "",
+  //       contact: {
+  //         phone: "",
+  //         email: "",
+  //         helpline: "",
+  //       },
+  //       office: {
+  //         address: { en: "", hi: "" },
+  //         pincode: "",
+  //       },
+  //       personsOfContact: [
+  //         {
+  //           name: "",
+  //           designation: { en: "", hi: "" },
+  //           phone: "",
+  //           email: "",
+  //         },
+  //       ],
+  //     });
+  //   } catch (error: any) {
+  //     console.error("Error:", error.response?.data || error.message);
+  //     alert("Failed to create department.");
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/departments/create-department",
+      const formDataToSend = new FormData();
+
+      // Validate and append icon
+      if (formData.icon) {
+        formDataToSend.append("icon", formData.icon);
+      } else {
+        alert("Please upload an icon image.");
+        return;
+      }
+
+      // Append primitive fields
+      formDataToSend.append("id", formData.id);
+      formDataToSend.append("website", formData.website || "");
+
+      // Append object fields as JSON strings
+      formDataToSend.append("name", JSON.stringify(formData.name));
+      formDataToSend.append(
+        "description",
+        JSON.stringify(formData.description)
+      );
+      formDataToSend.append("contact", JSON.stringify(formData.contact));
+      formDataToSend.append("office", JSON.stringify(formData.office));
+      formDataToSend.append(
+        "personsOfContact",
+        JSON.stringify(formData.personsOfContact)
+      );
+
+      const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+      const response = await axios.post(
+        `${BASE_URL}/api/departments/create-department`,
+        formDataToSend,
         {
-          method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
-          body: JSON.stringify(formData),
         }
       );
 
-      if (response.ok) {
-        const result = await response.json();
-        alert("Department created successfully!");
-        console.log("Response:", result);
+      alert("Department created successfully!");
+      console.log("Response:", response.data);
 
-        // Reset form
-        setFormData({
-          id: "",
-          name: { en: "", hi: "" },
-          icon: "",
-          description: { en: "", hi: "" },
-          website: [""],
-          contact: {
+      // Reset form
+      setFormData({
+        id: "",
+        name: { en: "", hi: "" },
+        icon: null,
+        description: { en: "", hi: "" },
+        website: "",
+        contact: {
+          phone: "",
+          email: "",
+          helpline: "",
+        },
+        office: {
+          address: { en: "", hi: "" },
+          pincode: "",
+        },
+        personsOfContact: [
+          {
+            name: "",
+            designation: { en: "", hi: "" },
             phone: "",
             email: "",
-            helpline: "",
           },
-          office: {
-            address: { en: "", hi: "" },
-            pincode: "",
-          },
-          personsOfContact: [
-            {
-              name: "",
-              designation: { en: "", hi: "" },
-              phone: "",
-              email: "",
-            },
-          ],
-        });
-      } else {
-        const error = await response.json();
-        console.error("Error:", error);
-        alert("Failed to create department.");
-      }
-    } catch (error) {
-      console.error("Network error:", error);
-      alert("Network error. Please try again later.");
+        ],
+      });
+    } catch (error: any) {
+      console.error("Error:", error.response?.data || error.message);
+      alert("Failed to create department.");
     }
   };
 
@@ -268,41 +505,23 @@ const DepartmentForm: React.FC = () => {
                   />
                 </div>
 
-                {/* <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Icon
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.icon}
-                    onChange={(e) => handleInputChange("icon", e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter icon name or URL"
-                  />
-                </div> */}
-
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Icon
                   </label>
-                  <select
-                    value={formData.icon}
-                    onChange={(e) => handleInputChange("icon", e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Select an icon</option>
-                    {emojiOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.value} — {option.label}
-                      </option>
-                    ))}
-                  </select>
 
-                  {formData.icon && (
-                    <div className="mt-2 text-blue-600 flex items-center gap-2 text-lg">
-                      <span>Preview:</span> <span>{formData.icon}</span>
-                    </div>
-                  )}
+                  <input
+                    type="file"
+                    // value={formData.icon}
+                    accept="image/*"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setFormData((prev) => ({ ...prev, icon: file }));
+                      }
+                    }}
+                  />
                 </div>
 
                 <div>
@@ -486,37 +705,15 @@ const DepartmentForm: React.FC = () => {
                 Websites
               </h2>
 
-              {formData.website.map((website, index) => (
-                <div key={index} className="flex items-center gap-2 mb-3">
-                  <input
-                    type="url"
-                    value={website}
-                    onChange={(e) =>
-                      handleArrayChange(index, e.target.value, "website")
-                    }
-                    className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter website URL"
-                  />
-                  {formData.website.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeWebsite(index)}
-                      className="p-2 text-red-600 hover:text-red-800"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              ))}
-
-              <button
-                type="button"
-                onClick={addWebsite}
-                className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-800"
-              >
-                <Plus className="w-4 h-4" />
-                Add Website
-              </button>
+              <div className="flex items-center gap-2 mb-3">
+                <input
+                  type="url"
+                  value={formData.website}
+                  onChange={(e) => handleInputChange("website", e.target.value)}
+                  className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter website URL"
+                />
+              </div>
             </div>
 
             {/* Persons of Contact */}
